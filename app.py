@@ -9,7 +9,7 @@ from plotly.subplots import make_subplots
 import math
 from streamlit_option_menu import option_menu
 
-SEOUL_PUBLIC_API = st.secrets["SEOUL_PUBLIC_API"]
+# SEOUL_PUBLIC_API = st.secrets["SEOUL_PUBLIC_API"]
 
 @st.cache_data
 def load_data():
@@ -57,10 +57,10 @@ def sgg_page(recent_data):
     if rent_filter == '월세' and not average_data.empty:
         # 바 차트 추가
         fig.add_trace(go.Bar(x=average_data['SGG_NM'], y=average_data['RENT_GTN'],
-                            name='보증금', marker=dict(color=average_data['RENT_GTN'], colorscale='Reds')), secondary_y=False)
+                            name='보증금', marker=dict(color=average_data['RENT_GTN'], colorscale='Blues')), secondary_y=False)
 
         # 선 그래프 추가
-        fig.add_trace(go.Scatter(x=average_data['SGG_NM'], y=average_data['RENT_FEE'], name='임대료', line=dict(color='black')), secondary_y=True)
+        fig.add_trace(go.Scatter(x=average_data['SGG_NM'], y=average_data['RENT_FEE'], name='임대료', line=dict(color='white')), secondary_y=True)
 
         # 그래프 레이아웃 설정
         fig.update_layout(title='자치구별 시세')
@@ -71,21 +71,7 @@ def sgg_page(recent_data):
 
         # Streamlit에서 Plotly 그래프 표시
         st.plotly_chart(fig)
-    
-    elif rent_filter == '전세' and not average_data.empty:
-        # 전세인 경우 바 차트만 추가
-        fig.add_trace(go.Bar(x=average_data['SGG_NM'], y=average_data['RENT_GTN'],
-                            name='보증금', marker=dict(color=average_data['RENT_GTN'], colorscale='Reds')), secondary_y=False)
 
-        # 그래프 레이아웃 설정
-        fig.update_layout(title='자치구별 시세')
-
-        # y축 설정
-        fig.update_yaxes(title_text='보증금', secondary_y=False)
-
-        # Streamlit에서 Plotly 그래프 표시
-        st.plotly_chart(fig)
-    
     else:
         # 그래프가 그려지지 않을 때 대체 문구 출력
         st.write("죄송합니다. 최근 1개월 내 계약 내역이 없습니다. 다른 옵션을 선택하세요.")
@@ -121,10 +107,10 @@ def bjdong_page(recent_data):
     if rent_filter == '월세' and not average_data.empty:
         # 바 차트 추가
         fig.add_trace(go.Bar(x=average_data['BJDONG_NM'], y=average_data['RENT_GTN'],
-                            name='보증금', marker=dict(color=average_data['RENT_GTN'], colorscale='Reds')), secondary_y=False)
+                            name='보증금', marker=dict(color=average_data['RENT_GTN'], colorscale='Blues')), secondary_y=False)
 
         # 선 그래프 추가
-        fig.add_trace(go.Scatter(x=average_data['BJDONG_NM'], y=average_data['RENT_FEE'], name='임대료', line=dict(color='black')), secondary_y=True)
+        fig.add_trace(go.Scatter(x=average_data['BJDONG_NM'], y=average_data['RENT_FEE'], name='임대료', line=dict(color='white')), secondary_y=True)
 
         # 그래프 레이아웃 설정
         fig.update_layout(title='법정동별 시세')
@@ -139,7 +125,7 @@ def bjdong_page(recent_data):
     elif rent_filter == '전세' and not average_data.empty:
         # 전세인 경우 바 차트만 추가
         fig.add_trace(go.Bar(x=average_data['BJDONG_NM'], y=average_data['RENT_GTN'],
-                            name='보증금', marker=dict(color=average_data['RENT_GTN'], colorscale='Reds')), secondary_y=False)
+                            name='보증금', marker=dict(color=average_data['RENT_GTN'], colorscale='Blues')), secondary_y=False)
 
         # 그래프 레이아웃 설정
         fig.update_layout(title='법정동별 시세')
@@ -155,6 +141,15 @@ def bjdong_page(recent_data):
         st.write("죄송합니다. 최근 1개월 내 계약 내역이 없습니다. 다른 옵션을 선택하세요.")
 
 # 건물별 시세
+import streamlit as st
+import pandas as pd
+import math
+
+
+def main_page():
+    st.title("🏠 내집을 찾아서")
+    st.subheader("서울 집 값, 어디까지 알아보고 오셨어요?")
+
 def bldg_page(recent_data):
     st.title("건물별 시세")
 
@@ -188,11 +183,13 @@ def bldg_page(recent_data):
     # 월세인 경우에만 선 그래프 추가
     if rent_filter == '월세' and not average_data.empty:
         # 바 차트 추가
-        fig.add_trace(go.Bar(x=average_data['BLDG_NM'], y=average_data['RENT_GTN'],
-                            name='보증금', marker=dict(color=average_data['RENT_GTN'], colorscale='Reds')), secondary_y=False)
+        bar_chart = go.Bar(x=average_data['BLDG_NM'], y=average_data['RENT_GTN'],
+                            name='보증금', marker=dict(color=average_data['RENT_GTN'], colorscale='Blues'))
+        fig.add_trace(bar_chart, secondary_y=False)
 
         # 선 그래프 추가
-        fig.add_trace(go.Scatter(x=average_data['BLDG_NM'], y=average_data['RENT_FEE'], name='임대료', line=dict(color='black')), secondary_y=True)
+        line_chart = go.Scatter(x=average_data['BLDG_NM'], y=average_data['RENT_FEE'], name='임대료', line=dict(color='white'))
+        fig.add_trace(line_chart, secondary_y=True)
 
         # 그래프 레이아웃 설정
         fig.update_layout(title='건물별 시세')
@@ -202,11 +199,13 @@ def bldg_page(recent_data):
         fig.update_yaxes(title_text='임대료', secondary_y=True)
 
         # Streamlit에서 Plotly 그래프 표시
-        st.plotly_chart(fig)
+        st.plotly_chart(fig, use_container_width=True)
+
+
     elif rent_filter == '전세' and not average_data.empty:
         # 전세인 경우 바 차트만 추가
         fig.add_trace(go.Bar(x=average_data['BLDG_NM'], y=average_data['RENT_GTN'],
-                            name='보증금', marker=dict(color=average_data['RENT_GTN'], colorscale='Reds')), secondary_y=False)
+                            name='보증금', marker=dict(color=average_data['RENT_GTN'], colorscale='Blues')), secondary_y=False)
 
         # 그래프 레이아웃 설정
         fig.update_layout(title='건물별 시세')
@@ -219,6 +218,7 @@ def bldg_page(recent_data):
     else:
         # 그래프가 그려지지 않을 때 대체 문구 출력
         st.write("죄송합니다. 최근 1개월 내 계약 내역이 없습니다. 다른 옵션을 선택하세요.")
+
 
 def main():
     # 데이터 불러오기
@@ -237,21 +237,47 @@ def main():
     # 선택된 데이터 출력
     # st.dataframe(recent_data)
 
+
+
+
     # 사이드바 메뉴
     with st.sidebar:
-        choice = option_menu("내 집 찾기", ["자치구", "법정동", "건물"],
-            icons=['bi bi-1-circle','bi bi-2-circle', 'bi bi-3-circle'],
-            menu_icon='house', default_index=0)
+        selected_menu = option_menu("메뉴 선택", ["메인 페이지", "내가 살 곳 찾기", "집 값 파악하기"],
+                            icons=['bi bi-house-fill','bi bi-geo-alt-fill', 'bi bi-graph-up-arrow'], menu_icon='bi bi-check',
+                            styles={"container": {"background-color": "#3081D0", "padding": "0px"},
+                                    "nav-link-selected": {"background-color": "#EEEEEE", "color": "#262730"}})
+
+        if selected_menu == "메인 페이지":
+            choice = "메인 페이지"
+            
+        elif selected_menu == "내가 살 곳 찾기":
+            choice = option_menu("내가 살 곳 찾기", ["자치구 정하기", "동네 정하기(법정동)", "건물 정하기"],
+                                 icons=['bi bi-1-circle','bi bi-2-circle', 'bi bi-3-circle'], menu_icon='bi bi-house-fill',
+                                 styles={"container": {"background-color": "#FC6736"}, "nav-link-selected": {"background-color": "#EEEEEE", "color": "#262730"}})
+
+        elif selected_menu == "집 값 파악하기":
+            choice = option_menu("집 값 파악하기", ["1", "2"],
+                                 icons=['bi bi-1-circle','bi bi-2-circle'], menu_icon='bi bi-graph-up-arrow',
+                                 styles={"container": {"background-color": "#FC6736"}, "nav-link-selected": {"background-color": "#EEEEEE", "color": "#262730"}})
 
     # 페이지 보이기
-    if choice == "자치구":
+    if choice == "메인 페이지":
+        main_page()
+
+    if choice == "자치구 정하기":
         sgg_page(recent_data)
     
-    if choice == "법정동":
+    if choice == "동네 정하기(법정동)":
         bjdong_page(recent_data)
     
-    if choice == "건물":
+    if choice == "건물 정하기":
         bldg_page(recent_data)
     
+    if choice == "b":
+        pass
+
+
+    
 if __name__ == '__main__':
+
     main()

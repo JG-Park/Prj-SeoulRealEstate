@@ -160,7 +160,7 @@ cython_debug/
 #.idea/
 
 # streamlit
-.streamlit/
+.steamlit/secret.toml
 
 # jupyter lab
 .ipynb
