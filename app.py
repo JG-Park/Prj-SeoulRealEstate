@@ -237,13 +237,13 @@ def yearly_page(recent_data):
     bjdong_filter = st.selectbox('법정동', bjdong_options)
     house_filter = st.multiselect('건물용도', recent_data['HOUSE_GBN_NM'].unique())
     bldg_options = recent_data[(recent_data['RENT_GBN'] == rent_filter) & (recent_data['BJDONG_NM'] == bjdong_filter) & (recent_data['HOUSE_GBN_NM'].isin(house_filter))]['BLDG_NM'].unique()
+    bldg_filter = st.selectbox('건물명', bldg_options)
+    area_filter = st.slider('평수', min_value=0, max_value=max_area_value, value=(0, max_area_value))
+
 
     if len(bldg_options) == 0:
         st.write("해당 조건에 맞는 건물이 없습니다.")
         st.stop()
-
-    bldg_filter = st.selectbox('건물명', bldg_options)
-    area_filter = st.slider('평수', min_value=0, max_value=max_area_value, value=(0, max_area_value))
 
     # 필터 적용
     filtered_recent_data = recent_data[(recent_data['BLDG_NM'] == bldg_filter) &
@@ -271,7 +271,7 @@ def yearly_page(recent_data):
         plot_graph(monthly_data, x='Month', y1='Avg_Rent_GTN', secondary_y=False, title='월별 전세 보증금 평균(2023)')
         show_dataframe(monthly_data[['Month', 'Avg_Rent_GTN']].rename(columns={'Month': '월', 'Avg_Rent_GTN': '보증금 평균'}))
     else:
-        st.write("2023년 계약 내역이 없습니다. 다른 옵션을 선택하세요.")
+        st.write("거래내역이 없습니다. 다른 옵션을 선택하세요.")
 
 
 def main():
@@ -302,8 +302,8 @@ def main():
                                  styles={"container": {"background-color": "#FC6736"}, "nav-link-selected": {"background-color": "#EEEEEE", "color": "#262730"}})
 
         elif selected_menu == "집 값 파악하기":
-            choice = option_menu("집 값 파악하기", ["최근 1개월 계약 현황", "작년 실거래가 조회"],
-                                 icons=['bi bi-1-circle','bi bi-2-circle'], menu_icon='bi bi-graph-up-arrow',
+            choice = option_menu("집 값 파악하기", ["최근 1개월 계약 현황", "2023년 실거래가 추이"],
+                                 icons=['bi bi-pen-fill','bi-graph-up-arrow'], menu_icon='bi bi-graph-up-arrow',
                                  styles={"container": {"background-color": "#FC6736"}, "nav-link-selected": {"background-color": "#EEEEEE", "color": "#262730"}})
 
     # 페이지 보이기
@@ -322,7 +322,7 @@ def main():
     elif choice == "최근 1개월 계약 현황":
         onemonth_page(recent_data)
 
-    elif choice == "작년 실거래가 조회":
+    elif choice == "2023년 실거래가 추이":
          yearly_page(recent_data)
     
 if __name__ == '__main__':
