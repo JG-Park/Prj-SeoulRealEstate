@@ -289,7 +289,7 @@ def main():
     # 사이드바 메뉴
     with st.sidebar:
         selected_menu = option_menu("메뉴 선택", ["메인 페이지", "내가 살 곳 찾기", "집 값 파악하기"],
-                            icons=['bi bi-house-fill','bi bi-geo-alt-fill', 'bi bi-graph-up-arrow'], menu_icon='bi bi-check',
+                            icons=['bi bi-house-fill','bi bi-geo-alt-fill', 'bi bi-currency-dollar'], menu_icon='bi bi-check',
                             styles={"container": {"background-color": "#3081D0", "padding": "0px"},
                                     "nav-link-selected": {"background-color": "#EEEEEE", "color": "#262730"}})
 
@@ -303,7 +303,7 @@ def main():
 
         elif selected_menu == "집 값 파악하기":
             choice = option_menu("집 값 파악하기", ["최근 1개월 계약 현황", "2023년 실거래가 추이"],
-                                 icons=['bi bi-pen-fill','bi-graph-up-arrow'], menu_icon='bi bi-graph-up-arrow',
+                                 icons=['bi bi-pen-fill','bi-graph-up-arrow'], menu_icon='bi bi-currency-dollar',
                                  styles={"container": {"background-color": "#FC6736"}, "nav-link-selected": {"background-color": "#EEEEEE", "color": "#262730"}})
 
     # 페이지 보이기
