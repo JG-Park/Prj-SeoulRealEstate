@@ -1,12 +1,10 @@
 # -*- encoding:utf-8 -*-
 
 import streamlit as st
-import requests
-import json
+import math
 import pandas as pd
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
-import math
 from streamlit_option_menu import option_menu
 
 # SEOUL_PUBLIC_API = st.secrets["SEOUL_PUBLIC_API"]
@@ -208,8 +206,9 @@ def yearly_page(recent_data):
             # 해당 월의 보증금과 임대료의 평균 계산
             avg_rent_gtn = monthly_data['RENT_GTN'].mean()
             avg_rent_fee = monthly_data['RENT_FEE'].mean()
+            avg_rent_area = monthly_data['RENT_AREA'].mean()
             # 결과를 튜플로 추가
-            monthly_averages.append((avg_rent_gtn, avg_rent_fee))
+            monthly_averages.append((avg_rent_gtn, avg_rent_fee, avg_rent_area))
 
         return monthly_averages
 
@@ -259,17 +258,18 @@ def yearly_page(recent_data):
     months = [f"{month}월" for month in range(1, 13)]
     avg_rent_gtn = [avg[0] for avg in monthly_averages]
     avg_rent_fee = [avg[1] for avg in monthly_averages]
-    monthly_data = pd.DataFrame({'Month': months, 'Avg_Rent_GTN': avg_rent_gtn, 'Avg_Rent_Fee': avg_rent_fee})
+    avg_rent_area = [avg[2] for avg in monthly_averages]
+    monthly_data = pd.DataFrame({'Month': months, 'Avg_Rent_GTN': avg_rent_gtn, 'Avg_Rent_Fee': avg_rent_fee, 'Avg_Rent_Area': avg_rent_area})
 
     # 그래프, 표 생성
     if rent_filter == '월세' and not filtered_recent_data.empty:
         # 보증금과 임대료 평균 그래프 시각화
         plot_graph(monthly_data, x='Month', y1='Avg_Rent_GTN', y2='Avg_Rent_Fee', secondary_y=True, title='월별 보증금 및 월 임대료 평균(2023)')
-        show_dataframe(monthly_data[['Month', 'Avg_Rent_GTN', 'Avg_Rent_Fee']].rename(columns={'Month': '월', 'Avg_Rent_GTN': '보증금 평균', 'Avg_Rent_Fee': '월 임대료 평균'}))
+        show_dataframe(monthly_data[['Month', 'Avg_Rent_GTN', 'Avg_Rent_Fee', 'Avg_Rent_Area']].rename(columns={'Month': '월', 'Avg_Rent_GTN': '보증금 평균', 'Avg_Rent_Fee': '월 임대료 평균', 'Avg_Rent_Area': '면적 평균'}))
     elif rent_filter == '전세' and not filtered_recent_data.empty:
         # 보증금과 임대료 평균 그래프 시각화
         plot_graph(monthly_data, x='Month', y1='Avg_Rent_GTN', secondary_y=False, title='월별 전세 보증금 평균(2023)')
-        show_dataframe(monthly_data[['Month', 'Avg_Rent_GTN']].rename(columns={'Month': '월', 'Avg_Rent_GTN': '보증금 평균'}))
+        show_dataframe(monthly_data[['Month', 'Avg_Rent_GTN', 'Avg_Rent_Area']].rename(columns={'Month': '월', 'Avg_Rent_GTN': '보증금 평균', 'Avg_Rent_Area': '면적 평균'}))
     else:
         st.write("거래내역이 없습니다. 다른 옵션을 선택하세요.")
 
