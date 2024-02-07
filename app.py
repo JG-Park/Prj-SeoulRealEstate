@@ -98,8 +98,8 @@ def bjdong_page(recent_data):
     max_area_value = math.ceil(recent_data['평수'].max())
 
     # 필터 설정
-    sgg_filter = st.selectbox('자치구', recent_data['SGG_NM'].unique())
     rent_filter = st.selectbox('전·월세', recent_data['RENT_GBN'].unique())
+    sgg_filter = st.selectbox('자치구', recent_data['SGG_NM'].unique())
     house_filter = st.multiselect('건물용도', recent_data['HOUSE_GBN_NM'].unique())
     area_filter = st.slider('평수', min_value=0, max_value=max_area_value, value=(0, max_area_value))
 
@@ -131,10 +131,10 @@ def bldg_page(recent_data):
     max_area_value = math.ceil(recent_data['평수'].max())
 
     # 필터 설정
+    rent_filter = st.selectbox('전·월세', recent_data['RENT_GBN'].unique())
     sgg_filter = st.selectbox('자치구', recent_data['SGG_NM'].unique())
     bjdong_options = recent_data[recent_data['SGG_NM'] == sgg_filter]['BJDONG_NM'].unique()
     bjdong_filter = st.selectbox('법정동', bjdong_options)
-    rent_filter = st.selectbox('전·월세', recent_data['RENT_GBN'].unique())
     house_filter = st.multiselect('건물용도', recent_data['HOUSE_GBN_NM'].unique())
     area_filter = st.slider('평수', min_value=0, max_value=max_area_value, value=(0, max_area_value))
 
@@ -155,6 +155,39 @@ def bldg_page(recent_data):
     elif rent_filter == '전세' and not average_data.empty:
         plot_graph(average_data, x='BLDG_NM', y1='RENT_GTN', title='법정동별 시세')
         show_dataframe(average_data[['BLDG_NM', 'RENT_GTN', '평수']].rename(columns={'BLDG_NM': '건물명', 'RENT_GTN': '보증금 평균', '평수': '평수 평균'}))
+    else:
+        st.write("최근 1개월 내 계약 내역이 없습니다. 다른 옵션을 선택하세요.")
+
+# 최근 1개월 시세 페이지
+def onemonth_page(recent_data):
+    st.title("건물별 시세")
+
+    # 최대 평수 구해서 정수로 나타내기(반올림)
+    max_area_value = math.ceil(recent_data['평수'].max())
+
+    # 필터 설정
+    rent_filter = st.selectbox('전·월세', recent_data['RENT_GBN'].unique())
+    sgg_filter = st.selectbox('자치구', recent_data['SGG_NM'].unique())
+    bjdong_options = recent_data[recent_data['SGG_NM'] == sgg_filter]['BJDONG_NM'].unique()
+    bjdong_filter = st.selectbox('법정동', bjdong_options)
+    house_filter = st.multiselect('건물용도', recent_data['HOUSE_GBN_NM'].unique())
+    bldg_options = recent_data[(recent_data['RENT_GBN'] == rent_filter) & (recent_data['BJDONG_NM'] == bjdong_filter) & (recent_data['HOUSE_GBN_NM'].isin(house_filter))]['BLDG_NM'].unique()
+    bldg_filter = st.multiselect('건물명', bldg_options)
+    area_filter = st.slider('평수', min_value=0, max_value=max_area_value, value=(0, max_area_value))
+
+
+    # 필터 적용
+    filtered_recent_data = recent_data[(recent_data['BLDG_NM'].isin(bldg_filter)) &
+                    (recent_data['RENT_GBN'] == rent_filter) &
+                    (recent_data['HOUSE_GBN_NM'].isin(house_filter)) &
+                    (recent_data['평수'] >= area_filter[0]) &
+                    (recent_data['평수'] <= area_filter[1])]
+
+    # 표 생성
+    if rent_filter == '월세' and not filtered_recent_data.empty:
+        st.dataframe(filtered_recent_data[['BLDG_NM', 'RENT_GTN', 'RENT_FEE', '평수']].rename(columns={'BLDG_NM': '건물명', 'RENT_GTN': '보증금', 'RENT_FEE': '임대료'}), hide_index=True, use_container_width=True)
+    elif rent_filter == '전세' and not filtered_recent_data.empty:
+        st.dataframe(filtered_recent_data[['BLDG_NM', 'RENT_GTN', '평수']].rename(columns={'BLDG_NM': '건물명', 'RENT_GTN': '보증금'}), hide_index=True, use_container_width=True)
     else:
         st.write("최근 1개월 내 계약 내역이 없습니다. 다른 옵션을 선택하세요.")
 
@@ -188,7 +221,7 @@ def main():
                                  styles={"container": {"background-color": "#FC6736"}, "nav-link-selected": {"background-color": "#EEEEEE", "color": "#262730"}})
 
         elif selected_menu == "집 값 파악하기":
-            choice = option_menu("집 값 파악하기", ["1", "2"],
+            choice = option_menu("집 값 파악하기", ["최근 1개월 시세", "2"],
                                  icons=['bi bi-1-circle','bi bi-2-circle'], menu_icon='bi bi-graph-up-arrow',
                                  styles={"container": {"background-color": "#FC6736"}, "nav-link-selected": {"background-color": "#EEEEEE", "color": "#262730"}})
 
@@ -205,8 +238,8 @@ def main():
     if choice == "건물 정하기":
         bldg_page(recent_data)
     
-    if choice == "b":
-        pass
+    if choice == "최근 1개월 시세":
+        onemonth_page(recent_data)
     
 if __name__ == '__main__':
     main()
