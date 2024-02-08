@@ -15,9 +15,10 @@ from email.mime.text import MIMEText
 SEOUL_PUBLIC_API = st.secrets["SEOUL_PUBLIC_API"]
 MAIL_KEY = st.secrets["MAIL_KEY"]
 
+
 @st.cache_data
 def load_data():
-    df = pd.read_csv('./data/data.csv')
+    df = pd.read_csv('./data/data.csv')  # 데이터 불러오기
     data = df.loc[:, ['SGG_NM',  # 자치구명
     'BJDONG_NM',  # 법정동명
     'CNTRCT_DE',  # 계약일
@@ -30,17 +31,17 @@ def load_data():
     'HOUSE_GBN_NM',  # 건물용도
     'BEFORE_GRNTY_AMOUNT',  # 종전보증금
     'BEFORE_MT_RENT_CHRGE']]  # 종전임대료
-    data['평수'] = data['RENT_AREA'] * 0.3025
-    data['BLDG_NM'] = data['BLDG_NM'].fillna(data['HOUSE_GBN_NM'])
+    data['평수'] = data['RENT_AREA'] * 0.3025  # 제곱미터를 평수로 변환하여 새로운 열 생성하기
+    data['BLDG_NM'] = data['BLDG_NM'].fillna(data['HOUSE_GBN_NM'])  # 건물명이 결측값인 경우 건물용도로 대체하기
     return data
 
-# 임대료 보증금 평균 그래프
+# 임대료 보증금 평균 그래프 생성
 def plot_graph(data, x, y1, y2=None, secondary_y=False, title=''):
     fig = make_subplots(specs=[[{"secondary_y": secondary_y}]])    
-    # y1에 대한 막대 차트 추가
+    # y1에 대한 막대 그래프 추가
     fig.add_trace(go.Bar(x=data[x], y=data[y1],
                          name='보증금 평균', marker=dict(color=data[y1], colorscale='Blues')), secondary_y=False)    
-    # y2가 제공되면 y2에 대한 선 차트 추가
+    # y2가 제공되면 y2에 대한 선 그래프 추가
     if y2:    
         fig.add_trace(go.Scatter(x=data[x], y=data[y2], name='임대료 평균', line=dict(color='white')), secondary_y=True)
     # 레이아웃 및 축 제목 업데이트
@@ -51,7 +52,7 @@ def plot_graph(data, x, y1, y2=None, secondary_y=False, title=''):
     # Streamlit에서 Plotly 차트 표시
     st.plotly_chart(fig, use_container_width=True)
 
-# 표를 생성하는 함수
+# 표 보이기 옵션 생성
 def show_dataframe(dataframe):
     # 사용자가 체크박스를 선택하면 표를 보여줌
     if st.checkbox('표 보이기'):
@@ -329,6 +330,19 @@ def yearly_page(recent_data):
         st.write("2023년 계약 내역이 없습니다. 다른 옵션을 선택하세요.")
 
 def main():
+    # 페이지 탭 디자인
+    st.set_page_config(
+        page_title="내 집을 찾아서",
+        page_icon="🏠",
+        layout="wide",
+        initial_sidebar_state="expanded",
+        # menu_items={
+        #     'Get Help': 'https://www.extremelycoolapp.com/help',
+        #     'Report a bug': "https://www.extremelycoolapp.com/bug",
+        #     'About': "# This is a header. This is an *extremely* cool app!"
+        # }
+    )    
+
     # 데이터 불러오기
     data = load_data()
 
@@ -356,8 +370,8 @@ def main():
                                  styles={"container": {"background-color": "#FC6736"}, "nav-link-selected": {"background-color": "#EEEEEE", "color": "#262730"}})
 
         elif selected_menu == "집 값 파악하기":
-            choice = option_menu("집 값 파악하기", ["최근 1개월 계약 현황", "2"],
-                                 icons=['bi bi-1-circle','bi bi-2-circle'], menu_icon='bi bi-graph-up-arrow',
+            choice = option_menu("집 값 파악하기", ["최근 1개월 계약 현황", "2023년 실거래가 추이"],
+                                 icons=['bi bi-pen-fill','bi-graph-up-arrow'], menu_icon='bi bi-currency-dollar',
                                  styles={"container": {"background-color": "#FC6736"}, "nav-link-selected": {"background-color": "#EEEEEE", "color": "#262730"}})
 
         if selected_menu == "지원 및 문의":
@@ -367,19 +381,22 @@ def main():
     if choice == "메인 페이지":
         main_page()
 
-    if choice == "자치구 정하기":
+    elif choice == "자치구 정하기":
         sgg_page(recent_data)
     
-    if choice == "동네 정하기":
+    elif choice == "동네 정하기":
         bjdong_page(recent_data)
     
-    if choice == "건물 정하기":
+    elif choice == "건물 정하기":
         bldg_page(recent_data)
     
-    if choice == "최근 1개월 계약 현황":
+    elif choice == "최근 1개월 계약 현황":
         onemonth_page(recent_data)
-    
-    if choice == "지원 및 문의":
+
+    elif choice == "2023년 실거래가 추이":
+         yearly_page(recent_data)
+
+    elif choice == "지원 및 문의":
         support_page()
 
 
