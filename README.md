@@ -98,12 +98,7 @@ def send_email(name, email, inquiry_type, inquiry_details):
 
 ## 발표자료 PDF 
 - 발표자료 PDF는 아래와 같습니다.
-  + [00발표자료_2024](portfolio.pdf)
-
-## Release Notes
-- 개발 릴리스 노트는 `Releases` 클릭하여 확인하여 주시기를 바랍니다.
-  + 참조 : https://github.com/dschloe/streamlit-api/releases
-  + 작성방법 : https://docs.github.com/ko/repositories/releasing-projects-on-github/managing-releases-in-a-repository
+  + [portfolio.pdf](portfolio.pdf)
 
 ## License
 - [MIT Licence](LICENSE)
