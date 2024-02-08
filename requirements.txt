@@ -9,4 +9,4 @@ beautifulsoup4
 selenium
 python-dotenv
 streamlit-option-menu
-altair
+email
