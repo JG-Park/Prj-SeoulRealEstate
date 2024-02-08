@@ -59,7 +59,7 @@ def show_dataframe(dataframe):
         # 표를 출력함
         st.dataframe(dataframe, hide_index=True, use_container_width=True)
 
-# 문의 메일 보내기
+# 메일 보내기
 def send_email(name, email, inquiry_type, inquiry_details):
     # 보내는 사람, 받는 사람 이메일 설정
     sender_email = "juyoungeeya@gmail.com"  # 보내는 사람 이메일 주소
@@ -98,21 +98,15 @@ def send_email(name, email, inquiry_type, inquiry_details):
 def main_page():
     st.title("🏠 내집을 찾아서")
     st.subheader("서울 집 값, 어디까지 알아보고 오셨어요?")
+    st.markdown("* 본 프로젝트는 서울 부동산 시장에서 적절한 주택을 찾는 과정을 지원하는 것을 목표로 합니다.")
+    st.markdown("* 사용자가 원하는 조건을 입력하면 서울에서 필요한 조건에 따른 부동산 시세를 그래프 및 도표 형태로 보여줍니다.")
+    st.markdown("* 이를 통해 사용자 입장에서 필요한 전·월세 실거래 정보를 한눈에 확인하고, 위치별 시세를 비교하여 집을 구하는 시간을 단축할 수 있습니다.\n\n")
+    st.markdown("\n")
+    st.markdown("\n")
 
-
-# 지원 및 문의 페이지
-def support_page():
-    st.title("지원 및 문의")
-
-    # 사용자 정보 입력
-    name = st.text_input("이름")
-    email = st.text_input("이메일 주소")
-    inquiry_type = st.selectbox("문의 유형", ["기술 지원", "문의 사항", "기타"])
-    inquiry_details = st.text_area("문의 내용", height=200)
-
-    # 문의 제출 버튼
-    if st.button("문의 제출"):
-        send_email(name, email, inquiry_type, inquiry_details)
+    st.subheader("프로젝트 개요")
+    st.markdown("멀티캠퍼스 멀티잇 데이터 분석 & 엔지니어 34회차")
+    st.markdown("Team 1 Mini-Project : '내 집을 찾아서'  [GitHub](https://github.com/Ju0s/Prj-FindMyHouse)")
 
 # 자치구별 시세 페이지
 def sgg_page(recent_data):
@@ -248,7 +242,7 @@ def onemonth_page(recent_data):
     else:
         st.write("최근 1개월 내 계약 내역이 없습니다. 다른 옵션을 선택하세요.")
 
-# 최근 1년 평균 시세 조회
+# 2023년 평균 시세 조회
 def yearly_page(recent_data):
     def calculate_monthly_averages(data):
         # 'CNTRCT_DE' 열을 datetime 형식으로 변환
@@ -328,6 +322,21 @@ def yearly_page(recent_data):
         show_dataframe(monthly_data[['Month', 'Avg_Rent_GTN', 'Avg_Rent_Area']].rename(columns={'Month': '월', 'Avg_Rent_GTN': '보증금 평균', 'Avg_Rent_Area': '면적 평균'}))
     else:
         st.write("2023년 계약 내역이 없습니다. 다른 옵션을 선택하세요.")
+
+
+# 지원 및 문의 페이지
+def support_page():
+    st.title("지원 및 문의")
+
+    # 사용자 정보 입력
+    name = st.text_input("이름")
+    email = st.text_input("이메일 주소")
+    inquiry_type = st.selectbox("문의 유형", ["기술 지원", "문의 사항", "기타"])
+    inquiry_details = st.text_area("문의 내용", height=200)
+
+    # 문의 제출 버튼
+    if st.button("문의 제출"):
+        send_email(name, email, inquiry_type, inquiry_details)
 
 def main():
     # 페이지 탭 디자인
